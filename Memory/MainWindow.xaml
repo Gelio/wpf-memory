@@ -25,7 +25,33 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Visibility="{Binding ElementName=SettingsExpander, Path=IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Column="1">
-                <TextBlock>Settings</TextBlock>
+                <TextBlock FontSize="18" Foreground="Green">Game settings</TextBlock>
+                
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Height="50" VerticalAlignment="Bottom">Time of flip back</TextBlock>
+
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="10" Height="50">
+                        <Slider Minimum="500" Maximum="3000" Name="TimeOfFlipBackSlider" Value="1000" Margin="0 0 0 10" Width="150" />
+                        <TextBlock Text="{Binding ElementName=TimeOfFlipBackSlider, Path=Value, StringFormat={}{0:F0}ms}" TextAlignment="Center" />
+                    </StackPanel>
+                    
+                    
+                    <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">
+                        <CheckBox>
+                            <TextBlock>Expand/Collapse all</TextBlock>
+                        </CheckBox>
+                    </StackPanel>
+                    
+                </Grid>
             </StackPanel>
 
             <ItemsControl ItemsSource="{Binding MemoryCards}" Grid.Column="0">
@@ -97,7 +123,7 @@
                     </Button.Resources>
                 </Button>
 
-                <Expander ExpandDirection="Up" Header="Settings" VerticalAlignment="Center" Name="SettingsExpander" />
+                <Expander ExpandDirection="Up" Header="Settings" VerticalAlignment="Center" Name="SettingsExpander" IsExpanded="True" />
             </StackPanel>
         </DockPanel>
     </Grid>

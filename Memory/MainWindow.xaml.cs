@@ -26,6 +26,10 @@ namespace Memory
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        public int DefaultGameTime = 20;
+        public int BoardSize = 4;
+        public int DifferentCardsCount;
+
         private ObservableCollection<MemoryCard> _memoryCards = new ObservableCollection<MemoryCard>();
         private MemoryCard _firstCard;
         private bool _gameStarted;
@@ -91,8 +95,9 @@ namespace Memory
 
         public MainWindow()
         {
+            DifferentCardsCount = BoardSize * BoardSize / 2;
             InitializeComponent();
-            generateCards();
+            GenerateCards();
             gameTimer.Interval = TimeSpan.FromSeconds(1);
             gameTimer.Tick += (sender, args) =>
             {
@@ -108,8 +113,8 @@ namespace Memory
             if (result == MessageBoxResult.Yes)
             {
                 GameStarted = false;
-                generateCards();
-                TimeLeft = 20;
+                GenerateCards();
+                TimeLeft = DefaultGameTime;
                 gameTimer.Stop();
             }
             else if (result == MessageBoxResult.No)
@@ -118,7 +123,7 @@ namespace Memory
             }
         }
 
-        private void generateCards()
+        private void GenerateCards()
         {
             CardsGuessed = 0;
             MemoryCards.Clear();
@@ -166,7 +171,7 @@ namespace Memory
                     card.Visible = false;
                     CardsGuessed++;
 
-                    if (CardsGuessed == 8)
+                    if (CardsGuessed == DifferentCardsCount)
                         Win();
                 }
                 else
@@ -187,8 +192,8 @@ namespace Memory
             MessageBoxResult result = MessageBox.Show(this, "You won! Would you like to start again?", "Win", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
-                generateCards();
-                TimeLeft = 20;
+                GenerateCards();
+                TimeLeft = DefaultGameTime;
             }
             else if (result == MessageBoxResult.No)
             {
@@ -209,9 +214,9 @@ namespace Memory
         private void ResetOnClick(object sender, RoutedEventArgs e)
         {
             GameStarted = false;
-            generateCards();
+            GenerateCards();
             gameTimer.Stop();
-            TimeLeft = 20;
+            TimeLeft = DefaultGameTime;
             FirstCard = null;
         }
     }
