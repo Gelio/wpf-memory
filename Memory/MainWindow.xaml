@@ -14,25 +14,41 @@
             <RowDefinition Height="50" />
         </Grid.RowDefinitions>
         
-        <UniformGrid Columns="4" Rows="4">
+        <ItemsControl ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=MemoryCards}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="4" Rows="4" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Content="{Binding Content}" Click="CardOnClick" DataContext="{Binding}">
+                        <Button.Resources>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Selected}" Value="True">
+                                        <Setter Property="Button.Background" Value="DarkRed" />
+                                    </DataTrigger>
+                                    <Trigger Property="Button.IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="DarkBlue" />
+                                        <Setter Property="Cursor" Value="Hand" />
+                                    </Trigger>
+                                </Style.Triggers>
+                                <Setter Property="Margin" Value="5" />
+                                <Setter Property="BorderBrush" Value="Black" />
+                                <Setter Property="BorderThickness" Value="2" />
+                                <Setter Property="Background" Value="AliceBlue" />
+                                <Setter Property="FontSize" Value="15" />
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <!--<UniformGrid Columns="4" Rows="4">
             <UniformGrid.Resources>
-                <Style TargetType="Button">
-                    <Setter Property="Margin" Value="5" />
-                    <Setter Property="BorderBrush" Value="Black" />
-                    <Setter Property="BorderThickness" Value="2" />
-                    <Setter Property="Background" Value="AliceBlue" />
-                    <Setter Property="FontSize" Value="15" />
-                    <!--<EventSetter Event="MouseEnter" Handler="CardOnMouseEnter" />
-                    <EventSetter Event="MouseLeave" Handler="CardOnMouseLeave"/>-->
-                    <Style.Triggers>
-                        <Trigger Property="Button.IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="DarkBlue" />
-                            <Setter Property="Cursor" Value="Hand" />
-                        </Trigger>
-                    </Style.Triggers>
-                </Style>
+                
             </UniformGrid.Resources>
-            <Button Content="hello" />
             <Button />
             <Button />
             <Button />
@@ -48,7 +64,8 @@
             <Button />
             <Button />
             <Button />
-        </UniformGrid>
+            <Button />
+        </UniformGrid>-->
 
         <DockPanel Grid.Row="1" VerticalAlignment="Center" Height="50">
             <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" Margin="10" FontSize="20" Foreground="Green">
