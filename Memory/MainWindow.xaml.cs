@@ -24,5 +24,17 @@ namespace Memory
         {
             InitializeComponent();
         }
+
+        private void CardOnMouseEnter(object sender, MouseEventArgs e)
+        {
+            Button button = sender as Button;
+            button.Background = new SolidColorBrush(Colors.DarkBlue);
+        }
+
+        private void CardOnMouseLeave(object sender, MouseEventArgs e)
+        {
+            Button button = sender as Button;
+            button.Background = new SolidColorBrush(Colors.AliceBlue);
+        }
     }
 }

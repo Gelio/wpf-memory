@@ -5,8 +5,70 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Memory"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Memory" Height="600" Width="800"
+        MinWidth="600" MinHeight="400"
+        >
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
         
+        <UniformGrid Columns="4" Rows="4">
+            <UniformGrid.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Margin" Value="5" />
+                    <Setter Property="BorderBrush" Value="Black" />
+                    <Setter Property="BorderThickness" Value="2" />
+                    <Setter Property="Background" Value="AliceBlue" />
+                    <Setter Property="FontSize" Value="15" />
+                    <!--<EventSetter Event="MouseEnter" Handler="CardOnMouseEnter" />
+                    <EventSetter Event="MouseLeave" Handler="CardOnMouseLeave"/>-->
+                    <Style.Triggers>
+                        <Trigger Property="Button.IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="DarkBlue" />
+                            <Setter Property="Cursor" Value="Hand" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </UniformGrid.Resources>
+            <Button Content="hello" />
+            <Button />
+            <Button />
+            <Button />
+            <Button />
+            <Button />
+            <Button />
+            <Button />
+            <Button />
+            <Button />
+            <Button />
+            <Button />
+            <Button />
+            <Button />
+            <Button />
+            <Button />
+        </UniformGrid>
+
+        <DockPanel Grid.Row="1" VerticalAlignment="Center" Height="50">
+            <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" Margin="10" FontSize="20" Foreground="Green">
+                time:
+                <TextBlock>
+                    20
+                </TextBlock>
+                s
+            </TextBlock>
+            
+            <StackPanel Orientation="Horizontal">
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Width" Value="100" />
+                        <Setter Property="Margin" Value="10"></Setter>
+                    </Style>
+                </StackPanel.Resources>
+                <Button>Reset</Button>
+                <Button>Play</Button>
+            </StackPanel>
+        </DockPanel>
     </Grid>
 </Window>
