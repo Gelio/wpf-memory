@@ -176,6 +176,8 @@ namespace Memory
                 }
                 FirstCard = null;
             }
+            else
+                FirstCard = null;
         }
 
         private void Win()
