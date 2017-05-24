@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Memory"
         mc:Ignorable="d"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Memory" Height="600" Width="800"
         MinWidth="600" MinHeight="400"
         >
@@ -13,8 +14,8 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="50" />
         </Grid.RowDefinitions>
-        
-        <ItemsControl ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=MemoryCards}">
+
+        <ItemsControl ItemsSource="{Binding MemoryCards}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <UniformGrid Columns="4" Rows="4" />
@@ -48,46 +49,38 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <!--<UniformGrid Columns="4" Rows="4">
-            <UniformGrid.Resources>
-                
-            </UniformGrid.Resources>
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-            <Button />
-        </UniformGrid>-->
 
         <DockPanel Grid.Row="1" VerticalAlignment="Center" Height="50">
             <TextBlock DockPanel.Dock="Right" VerticalAlignment="Center" Margin="10" FontSize="20" Foreground="Green">
                 time:
-                <TextBlock>
-                    20
-                </TextBlock>
+                <TextBlock Text="{Binding TimeLeft}" />
                 s
             </TextBlock>
             
             <StackPanel Orientation="Horizontal">
                 <StackPanel.Resources>
-                    <Style TargetType="Button">
+                    <Style TargetType="Button" x:Key="BaseButtonStyle">
                         <Setter Property="Width" Value="100" />
-                        <Setter Property="Margin" Value="10"></Setter>
+                        <Setter Property="Margin" Value="10" />
                     </Style>
                 </StackPanel.Resources>
-                <Button>Reset</Button>
-                <Button>Play</Button>
+                <Button Click="ResetOnClick" Style="{StaticResource BaseButtonStyle}">
+                    Reset
+                </Button>
+                <Button Click="StartOnClick">
+                    <Button.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding GameStarted}" Value="True">
+                                    <Setter Property="Content" Value="Pause" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding GameStarted}" Value="False">
+                                    <Setter Property="Content" Value="Play" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Resources>
+                </Button>
             </StackPanel>
         </DockPanel>
     </Grid>
