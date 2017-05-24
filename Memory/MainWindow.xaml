@@ -33,6 +33,9 @@
                                         <Setter Property="Background" Value="DarkBlue" />
                                         <Setter Property="Cursor" Value="Hand" />
                                     </Trigger>
+                                    <DataTrigger Binding="{Binding Visible}" Value="False">
+                                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                                    </DataTrigger>
                                 </Style.Triggers>
                                 <Setter Property="Margin" Value="5" />
                                 <Setter Property="BorderBrush" Value="Black" />

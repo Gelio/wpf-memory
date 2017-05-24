@@ -25,6 +25,7 @@ namespace Memory
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private ObservableCollection<MemoryCard> _memoryCards = new ObservableCollection<MemoryCard>();
+        private MemoryCard _firstCard = null;
 
         public ObservableCollection<MemoryCard> MemoryCards
         {
@@ -33,6 +34,17 @@ namespace Memory
             {
                 if (Equals(value, _memoryCards)) return;
                 _memoryCards = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public MemoryCard FirstCard
+        {
+            get { return _firstCard; }
+            set
+            {
+                if (Equals(value, _firstCard)) return;
+                _firstCard = value;
                 OnPropertyChanged();
             }
         }
@@ -84,6 +96,27 @@ namespace Memory
             MemoryCard card = button.DataContext as MemoryCard;
 
             card.Selected = !card.Selected;
+
+            if (card.Selected)
+            {
+                if (FirstCard == null)
+                {
+                    FirstCard = card;
+                    return;
+                }
+
+                if (FirstCard.Content == card.Content)
+                {
+                    FirstCard.Visible = false;
+                    card.Visible = false;
+                }
+                else
+                {
+                    FirstCard.Selected = false;
+                    card.Selected = false;
+                }
+                FirstCard = null;
+            }
         }
     }
 }

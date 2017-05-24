@@ -13,6 +13,7 @@ namespace Memory
     {
         private int _content;
         private bool _selected;
+        private bool _visible = true;
 
         public int Content
         {
@@ -32,6 +33,17 @@ namespace Memory
             {
                 if (value == _selected) return;
                 _selected = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool Visible
+        {
+            get { return _visible; }
+            set
+            {
+                if (value == _visible) return;
+                _visible = value;
                 OnPropertyChanged();
             }
         }
