@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Memory.Annotations;
 
 namespace Memory
@@ -74,7 +75,7 @@ namespace Memory
             }
         }
 
-        private Timer gameTimer = new Timer(1000);
+        private DispatcherTimer gameTimer = new DispatcherTimer();
         private int _cardsGuessed;
 
         public int CardsGuessed
@@ -92,7 +93,8 @@ namespace Memory
         {
             InitializeComponent();
             generateCards();
-            gameTimer.Elapsed += (sender, args) =>
+            gameTimer.Interval = TimeSpan.FromSeconds(1);
+            gameTimer.Tick += (sender, args) =>
             {
                 TimeLeft--;
                 if (TimeLeft <= 0)
@@ -102,13 +104,13 @@ namespace Memory
 
         private void TimeUp()
         {
-            gameTimer.Stop();
             MessageBoxResult result = MessageBox.Show(this, "You lost! Would you like to start again?", "Lost", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
                 GameStarted = false;
                 generateCards();
                 TimeLeft = 20;
+                gameTimer.Stop();
             }
             else if (result == MessageBoxResult.No)
             {
