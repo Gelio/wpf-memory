@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -13,8 +14,9 @@ namespace Memory.Converters
     {
         private bool _expanded;
         private string _name;
-        private string _file;
+        private string _filePath;
         private DateTime _date;
+        private string _fileName;
 
         public bool Expanded
         {
@@ -38,13 +40,25 @@ namespace Memory.Converters
             }
         }
 
-        public string File
+        public string FilePath
         {
-            get { return _file; }
+            get { return _filePath; }
             set
             {
-                if (value == _file) return;
-                _file = value;
+                if (value == _filePath) return;
+                _filePath = value;
+                FileName = Path.GetFileName(_filePath);
+                OnPropertyChanged();
+            }
+        }
+
+        public string FileName
+        {
+            get { return _fileName; }
+            set
+            {
+                if (value == _fileName) return;
+                _fileName = value;
                 OnPropertyChanged();
             }
         }

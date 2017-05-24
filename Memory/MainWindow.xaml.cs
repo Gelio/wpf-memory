@@ -20,6 +20,8 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using Memory.Annotations;
 using Memory.Converters;
+using Microsoft.Win32;
+using Path = System.IO.Path;
 
 namespace Memory
 {
@@ -35,7 +37,7 @@ namespace Memory
         private ObservableCollection<MemoryCard> _memoryCards = new ObservableCollection<MemoryCard>();
         private MemoryCard _firstCard;
         private bool _gameStarted;
-        private int _timeLeft = 20;
+        private int _timeLeft;
 
         public ObservableCollection<MemoryCard> MemoryCards
         {
@@ -81,7 +83,7 @@ namespace Memory
             }
         }
 
-        private DispatcherTimer gameTimer = new DispatcherTimer();
+        private readonly DispatcherTimer _gameTimer = new DispatcherTimer();
         private int _cardsGuessed;
         private ObservableCollection<CardImage> _cardImages = new ObservableCollection<CardImage>();
 
@@ -110,11 +112,13 @@ namespace Memory
         public MainWindow()
         {
             DifferentCardsCount = BoardSize * BoardSize / 2;
+            TimeLeft = DefaultGameTime;
             InitializeComponent();
             GenerateCards();
             PopulateCardImages();
-            gameTimer.Interval = TimeSpan.FromSeconds(1);
-            gameTimer.Tick += (sender, args) =>
+
+            _gameTimer.Interval = TimeSpan.FromSeconds(1);
+            _gameTimer.Tick += (sender, args) =>
             {
                 TimeLeft--;
                 if (TimeLeft <= 0)
@@ -130,7 +134,7 @@ namespace Memory
                 GameStarted = false;
                 GenerateCards();
                 TimeLeft = DefaultGameTime;
-                gameTimer.Stop();
+                _gameTimer.Stop();
             }
             else if (result == MessageBoxResult.No)
             {
@@ -168,7 +172,12 @@ namespace Memory
                 return;
 
             Button button = sender as Button;
+            if (button == null)
+                return;
+
             MemoryCard card = button.DataContext as MemoryCard;
+            if (card == null)
+                return;
 
             card.Selected = !card.Selected;
 
@@ -202,7 +211,7 @@ namespace Memory
 
         private void Win()
         {
-            gameTimer.Stop();
+            _gameTimer.Stop();
             GameStarted = false;
             MessageBoxResult result = MessageBox.Show(this, "You won! Would you like to start again?", "Win", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
@@ -221,31 +230,24 @@ namespace Memory
             GameStarted = !GameStarted;
 
             if (GameStarted)
-                gameTimer.Start();
+                _gameTimer.Start();
             else
-                gameTimer.Stop();
+                _gameTimer.Stop();
         }
 
         private void OnResetClick(object sender, RoutedEventArgs e)
         {
             GameStarted = false;
             GenerateCards();
-            gameTimer.Stop();
+            _gameTimer.Stop();
             TimeLeft = DefaultGameTime;
             FirstCard = null;
         }
 
         private void OnCollapseChecked(object sender, RoutedEventArgs e)
         {
-            CheckBox checkBox = sender as CheckBox;
-
-            if (checkBox == null)
-                return;
-
-            bool isExpanded = checkBox.IsChecked == true;
-
             foreach (CardImage cardImage in CardImages)
-                cardImage.Expanded = isExpanded;
+                cardImage.Expanded = true;
         }
 
         private void PopulateCardImages()
@@ -254,7 +256,7 @@ namespace Memory
             CardImages.Clear();
             for (int i = 1; i <= DifferentCardsCount; i++)
             {
-                string fileName = imagesDirectory + "/" + i + ".jpg";
+                string fileName = Path.GetFullPath(Path.Combine(imagesDirectory, + i + ".jpg"));
                 if (!File.Exists(fileName))
                 {
                     MessageBox.Show(this, "Cannot open file " + fileName, "Error", MessageBoxButton.OK,
@@ -263,8 +265,34 @@ namespace Memory
                 }
 
                 
-                CardImages.Add(new CardImage() { File = fileName, Name = "name" + i, Date = File.GetCreationTime(fileName) });
+                CardImages.Add(new CardImage() { FilePath = fileName, Name = "name" + i, Date = File.GetCreationTime(fileName) });
             }
+        }
+
+        private void OnImageMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Image image = sender as Image;
+            if (image == null)
+                return;
+
+            CardImage cardImage = image.DataContext as CardImage;
+
+            if (cardImage == null)
+                return;
+
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg|GIF Files (*.gif)|*.gif";
+            bool? result = dialog.ShowDialog(this);
+            if (!result.Value)
+                return;
+
+            cardImage.FilePath = dialog.FileName;
+        }
+
+        private void OnCollapseUnchecked(object sender, RoutedEventArgs e)
+        {
+            foreach (CardImage cardImage in CardImages)
+                cardImage.Expanded = false;
         }
     }
 }
