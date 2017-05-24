@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -18,6 +19,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Memory.Annotations;
+using Memory.Converters;
 
 namespace Memory
 {
@@ -26,7 +28,7 @@ namespace Memory
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public int DefaultGameTime = 20;
+        public int DefaultGameTime = 60;
         public int BoardSize = 4;
         public int DifferentCardsCount;
 
@@ -81,6 +83,7 @@ namespace Memory
 
         private DispatcherTimer gameTimer = new DispatcherTimer();
         private int _cardsGuessed;
+        private ObservableCollection<CardImage> _cardImages = new ObservableCollection<CardImage>();
 
         public int CardsGuessed
         {
@@ -93,11 +96,23 @@ namespace Memory
             }
         }
 
+        public ObservableCollection<CardImage> CardImages
+        {
+            get { return _cardImages; }
+            set
+            {
+                if (Equals(value, _cardImages)) return;
+                _cardImages = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainWindow()
         {
             DifferentCardsCount = BoardSize * BoardSize / 2;
             InitializeComponent();
             GenerateCards();
+            PopulateCardImages();
             gameTimer.Interval = TimeSpan.FromSeconds(1);
             gameTimer.Tick += (sender, args) =>
             {
@@ -201,7 +216,7 @@ namespace Memory
             }
         }
 
-        private void StartOnClick(object sender, RoutedEventArgs e)
+        private void OnStartClick(object sender, RoutedEventArgs e)
         {
             GameStarted = !GameStarted;
 
@@ -211,13 +226,45 @@ namespace Memory
                 gameTimer.Stop();
         }
 
-        private void ResetOnClick(object sender, RoutedEventArgs e)
+        private void OnResetClick(object sender, RoutedEventArgs e)
         {
             GameStarted = false;
             GenerateCards();
             gameTimer.Stop();
             TimeLeft = DefaultGameTime;
             FirstCard = null;
+        }
+
+        private void OnCollapseChecked(object sender, RoutedEventArgs e)
+        {
+            CheckBox checkBox = sender as CheckBox;
+
+            if (checkBox == null)
+                return;
+
+            bool isExpanded = checkBox.IsChecked == true;
+
+            foreach (CardImage cardImage in CardImages)
+                cardImage.Expanded = isExpanded;
+        }
+
+        private void PopulateCardImages()
+        {
+            string imagesDirectory = "Images";
+            CardImages.Clear();
+            for (int i = 1; i <= DifferentCardsCount; i++)
+            {
+                string fileName = imagesDirectory + "/" + i + ".jpg";
+                if (!File.Exists(fileName))
+                {
+                    MessageBox.Show(this, "Cannot open file " + fileName, "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    Close();
+                }
+
+                
+                CardImages.Add(new CardImage() { File = fileName, Name = "name" + i, Date = File.GetCreationTime(fileName) });
+            }
         }
     }
 }

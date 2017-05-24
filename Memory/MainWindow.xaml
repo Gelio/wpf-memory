@@ -27,7 +27,7 @@
             <StackPanel Visibility="{Binding ElementName=SettingsExpander, Path=IsExpanded, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Column="1">
                 <TextBlock FontSize="18" Foreground="Green">Game settings</TextBlock>
                 
-                <Grid>
+                <Grid Margin="0 10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
@@ -43,15 +43,58 @@
                         <Slider Minimum="500" Maximum="3000" Name="TimeOfFlipBackSlider" Value="1000" Margin="0 0 0 10" Width="150" />
                         <TextBlock Text="{Binding ElementName=TimeOfFlipBackSlider, Path=Value, StringFormat={}{0:F0}ms}" TextAlignment="Center" />
                     </StackPanel>
-                    
-                    
+
+
                     <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">
-                        <CheckBox>
+                        <CheckBox Checked="OnCollapseChecked">
                             <TextBlock>Expand/Collapse all</TextBlock>
                         </CheckBox>
                     </StackPanel>
-                    
                 </Grid>
+
+                <ListView ItemsSource="{Binding CardImages}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Expander Header="{Binding}">
+                                <Expander.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Name}" Background="Transparent" BorderThickness="0" />
+                                    </DataTemplate>
+                                </Expander.HeaderTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox Text="{Binding Name}" />
+                                    <Image Source="{Binding File}" Width="90" Height="70" />
+
+                                    <Border BorderBrush="Black" BorderThickness="1">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="*" />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Border BorderThickness="0 0 1 1" BorderBrush="Black">
+                                                <TextBlock>File name:</TextBlock>
+                                            </Border>
+                                            <Border BorderThickness="0 0 1 0" BorderBrush="Black" Grid.Row="1" Grid.Column="0">
+                                                <TextBlock>Date:</TextBlock>
+                                            </Border>
+
+                                            <Border BorderThickness="0 0 0 1" BorderBrush="Black" Grid.Row="0" Grid.Column="1" >
+                                                <TextBlock TextAlignment="Center" Text="{Binding File}"/>
+                                            </Border>
+                                            <TextBlock TextAlignment="Center" Text="{Binding Date, StringFormat={}{0:D}}"
+                                                       Grid.Row="1" Grid.Column="1" />
+                                        </Grid>
+                                    </Border>
+                                </StackPanel>
+                            </Expander>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </StackPanel>
 
             <ItemsControl ItemsSource="{Binding MemoryCards}" Grid.Column="0">
@@ -105,10 +148,10 @@
                         <Setter Property="Margin" Value="10" />
                     </Style>
                 </StackPanel.Resources>
-                <Button Click="ResetOnClick" Style="{StaticResource BaseButtonStyle}">
+                <Button Click="OnResetClick" Style="{StaticResource BaseButtonStyle}">
                     Reset
                 </Button>
-                <Button Click="StartOnClick">
+                <Button Click="OnStartClick">
                     <Button.Resources>
                         <Style TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
                             <Style.Triggers>
