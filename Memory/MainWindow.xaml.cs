@@ -210,6 +210,7 @@ namespace Memory
             generateCards();
             gameTimer.Stop();
             TimeLeft = 20;
+            FirstCard = null;
         }
     }
 }
