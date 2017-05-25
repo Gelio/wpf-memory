@@ -31,7 +31,7 @@ namespace Memory
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public int DefaultGameTime = 5;
+        public int DefaultGameTime = 60;
         public int BoardSize = 4;
         public int DifferentCardsCount;
         public int CardFlipDelay = 500;
