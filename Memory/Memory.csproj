@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="CardImage.cs" />
+    <Compile Include="Converters\DoubleToDurationConverter.cs" />
     <Compile Include="Converters\InvertedBooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\PathToImageConverter.cs" />
     <Compile Include="ListExtender.cs" />

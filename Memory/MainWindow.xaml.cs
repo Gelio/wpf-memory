@@ -14,6 +14,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -33,6 +34,7 @@ namespace Memory
         public int DefaultGameTime = 60;
         public int BoardSize = 4;
         public int DifferentCardsCount;
+        public int CardFlipDelay = 500;
 
         private ObservableCollection<MemoryCard> _memoryCards = new ObservableCollection<MemoryCard>();
         private MemoryCard _firstCard;
@@ -42,7 +44,6 @@ namespace Memory
         private int _cardsGuessed;
         private ObservableCollection<CardImage> _cardImages = new ObservableCollection<CardImage>();
         private MemoryCard _secondCard;
-        private double _cardAnimationDelay = 1000;
 
         public ObservableCollection<MemoryCard> MemoryCards
         {
@@ -117,17 +118,6 @@ namespace Memory
             {
                 if (Equals(value, _cardImages)) return;
                 _cardImages = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public double CardAnimationDelay
-        {
-            get { return _cardAnimationDelay; }
-            set
-            {
-                if (value.Equals(_cardAnimationDelay)) return;
-                _cardAnimationDelay = value;
                 OnPropertyChanged();
             }
         }
@@ -207,6 +197,7 @@ namespace Memory
                 return;
 
             card.Selected = true;
+            card.AnimationVisible = true;
 
             if (FirstCard == null)
             {
@@ -215,30 +206,31 @@ namespace Memory
             }
 
             SecondCard = card;
-            OnCardsSelected();
+            OnBothCardsSelected();
         }
 
-        private async void OnCardsSelected()
+        private async void OnBothCardsSelected()
         {
-            await Task.Delay((int)CardAnimationDelay);
+            // Wait for second card to show up
+            await Task.Delay(CardFlipDelay);
+            // Wait for both cards to stay up (slider can be changed in the meantime, therefore I need to read it again)
+            await Task.Delay((int)TimeOfFlipBackSlider.Value);
+
+            FirstCard.AnimationVisible = SecondCard.AnimationVisible = false;
+            await Task.Delay(CardFlipDelay);
+            FirstCard.Selected = SecondCard.Selected = false;
+
             if (FirstCard.Content == SecondCard.Content)
             {
-                FirstCard.Visible = false;
-                SecondCard.Visible = false;
-                CardsGuessed++;
-
-                await Task.Delay((int)CardAnimationDelay);
-
+                FirstCard.Visible = SecondCard.Visible = false;
                 FirstCard = SecondCard = null;
+
+                CardsGuessed++;
                 if (CardsGuessed == DifferentCardsCount)
                     Win();
             }
             else
             {
-                FirstCard.Selected = false;
-                SecondCard.Selected = false;
-
-                await Task.Delay((int)CardAnimationDelay);
                 FirstCard = SecondCard = null;
             }
         }

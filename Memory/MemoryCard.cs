@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Memory.Annotations;
 using Memory.Converters;
 
@@ -16,6 +17,8 @@ namespace Memory
         private bool _selected;
         private bool _visible = true;
         private CardImage _cardImage;
+        private bool _animationVisible = false;
+        private Duration _animationDuration = new Duration(TimeSpan.FromMilliseconds(1000));
 
         public int Content
         {
@@ -57,6 +60,28 @@ namespace Memory
             {
                 if (Equals(value, _cardImage)) return;
                 _cardImage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool AnimationVisible
+        {
+            get { return _animationVisible; }
+            set
+            {
+                if (value == _animationVisible) return;
+                _animationVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Duration AnimationDuration
+        {
+            get { return _animationDuration; }
+            set
+            {
+                if (value.Equals(_animationDuration)) return;
+                _animationDuration = value;
                 OnPropertyChanged();
             }
         }

@@ -14,6 +14,7 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:PathToImageConverter x:Key="PathToImageConverter" />
         <converters:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
+        <converters:DoubleToDurationConverter x:Key="DoubleToDurationConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -49,7 +50,7 @@
                         <TextBlock Height="50" VerticalAlignment="Bottom">Time of flip back</TextBlock>
 
                         <StackPanel Grid.Row="0" Grid.Column="1" Margin="10" Height="50">
-                            <Slider Minimum="500" Maximum="3000" Name="TimeOfFlipBackSlider" Value="{Binding CardAnimationDelay}" Margin="0 0 0 10" Width="180" />
+                            <Slider Minimum="500" Maximum="3000" Name="TimeOfFlipBackSlider" Value="1000" Margin="0 0 0 10" Width="180" />
                             <TextBlock Text="{Binding ElementName=TimeOfFlipBackSlider, Path=Value, StringFormat={}{0:F0}ms}" TextAlignment="Center" />
                         </StackPanel>
 
@@ -166,8 +167,8 @@
                                 </Style>
                             </Border.Style>
 
-                            <Grid>
-                                <Button Click="CardOnClick" Content="{Binding Content}" BorderThickness="0" DataContext="{Binding}"
+                            <Grid Background="AliceBlue">
+                                <Button Click="CardOnClick" BorderThickness="0" DataContext="{Binding}"
                                         FontSize="15" Visibility="{Binding Selected, Converter={StaticResource InvertedBooleanToVisibilityConverter}}">
                                     <Button.Resources>
                                         <Style TargetType="Button">
@@ -192,6 +193,29 @@
                                 </Button>
 
                                 <Grid Background="AliceBlue" Visibility="{Binding Selected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Setter Property="Opacity" Value="0" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding AnimationVisible}" Value="True">
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard TargetProperty="Opacity">
+                                                                <DoubleAnimation Duration="0:0:0.5" To="1" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                    <DataTrigger.ExitActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard TargetProperty="Opacity">
+                                                                <DoubleAnimation Duration="0:0:0.5" To="0" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.ExitActions>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
                                     <Image Source="{Binding CardImage.FilePath}" Stretch="Fill" Margin="2" />
                                 </Grid>
                             </Grid>
