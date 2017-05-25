@@ -31,7 +31,7 @@ namespace Memory
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public int DefaultGameTime = 60;
+        public int DefaultGameTime = 5;
         public int BoardSize = 4;
         public int DifferentCardsCount;
         public int CardFlipDelay = 500;
@@ -284,16 +284,33 @@ namespace Memory
 
             for (int i = 0; i < DifferentCardsCount * 2; i++)
             {
-                MemoryCards[i].AnimationDuration = new Duration(TimeSpan.FromMilliseconds(cardDuration));
+                Grid innerGrid = GetGridFromControl(i);
+                
+                Storyboard sb = new Storyboard();
+
+                DoubleAnimation endAnimation = new DoubleAnimation(0.5, new Duration(TimeSpan.FromMilliseconds(cardDuration)));
+                Storyboard.SetTarget(endAnimation, innerGrid);
+                Storyboard.SetTargetProperty(endAnimation, new PropertyPath(Grid.OpacityProperty));
+
+                sb.Children.Add(endAnimation);
+                sb.Begin();
 
                 MemoryCards[i].Visible = true;
                 MemoryCards[i].Selected = true;
-                MemoryCards[i].EndGameAnimation = true;
                 await Task.Delay((int)cardDuration);
                 cardDuration *= EndGameAnimationReductionRatio;
             }
 
             ResetEnabled = true;
+        }
+
+        private Grid GetGridFromControl(int index)
+        {
+            var border = VisualTreeHelper.GetChild(CardsItemControl.ItemContainerGenerator.ContainerFromIndex(index), 0);
+            var outerGrid = VisualTreeHelper.GetChild(border, 0);
+            Grid innerGrid = VisualTreeHelper.GetChild(outerGrid, 1) as Grid;
+
+            return innerGrid;
         }
 
         private void OnStartClick(object sender, RoutedEventArgs e)

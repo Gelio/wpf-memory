@@ -213,15 +213,6 @@
                                                         </BeginStoryboard>
                                                     </DataTrigger.ExitActions>
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding EndGameAnimation}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard TargetProperty="Opacity">
-                                                                <DoubleAnimation Duration="0:0:1" To="0.5" />
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Grid.Style>
