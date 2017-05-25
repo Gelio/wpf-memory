@@ -31,7 +31,7 @@ namespace Memory
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public int DefaultGameTime = 5;
+        public int DefaultGameTime = 60;
         public int BoardSize = 4;
         public int DifferentCardsCount;
         public int CardFlipDelay = 500;
@@ -282,18 +282,15 @@ namespace Memory
                 card.Visible = false;
             double cardDuration = EndGameFirstCardDuration;
 
-            MemoryCards[0].Visible = true;
-            MemoryCards[0].Selected = true;
-            MemoryCards[0].EndGameAnimation = true;
-            await Task.Delay((int) cardDuration);
-
-            for (int i = 1; i < DifferentCardsCount * 2; i++)
+            for (int i = 0; i < DifferentCardsCount * 2; i++)
             {
-                cardDuration *= EndGameAnimationReductionRatio;
+                MemoryCards[i].AnimationDuration = new Duration(TimeSpan.FromMilliseconds(cardDuration));
+
                 MemoryCards[i].Visible = true;
                 MemoryCards[i].Selected = true;
                 MemoryCards[i].EndGameAnimation = true;
-                await Task.Delay((int) cardDuration);
+                await Task.Delay((int)cardDuration);
+                cardDuration *= EndGameAnimationReductionRatio;
             }
 
             ResetEnabled = true;
@@ -331,7 +328,7 @@ namespace Memory
             CardImages.Clear();
             for (int i = 1; i <= DifferentCardsCount; i++)
             {
-                string fileName = Path.GetFullPath(Path.Combine(imagesDirectory, + i + ".jpg"));
+                string fileName = Path.GetFullPath(Path.Combine(imagesDirectory, +i + ".jpg"));
                 if (!File.Exists(fileName))
                 {
                     MessageBox.Show(this, "Cannot open file " + fileName, "Error", MessageBoxButton.OK,
@@ -339,7 +336,7 @@ namespace Memory
                     Close();
                 }
 
-                
+
                 CardImages.Add(new CardImage() { FilePath = fileName, Name = "name" + i, Date = File.GetCreationTime(fileName) });
             }
         }
