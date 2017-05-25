@@ -38,6 +38,11 @@ namespace Memory
         private MemoryCard _firstCard;
         private bool _gameStarted;
         private int _timeLeft;
+        private readonly DispatcherTimer _gameTimer = new DispatcherTimer();
+        private int _cardsGuessed;
+        private ObservableCollection<CardImage> _cardImages = new ObservableCollection<CardImage>();
+        private MemoryCard _secondCard;
+        private double _cardAnimationDelay = 1000;
 
         public ObservableCollection<MemoryCard> MemoryCards
         {
@@ -57,6 +62,17 @@ namespace Memory
             {
                 if (Equals(value, _firstCard)) return;
                 _firstCard = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public MemoryCard SecondCard
+        {
+            get { return _secondCard; }
+            set
+            {
+                if (Equals(value, _secondCard)) return;
+                _secondCard = value;
                 OnPropertyChanged();
             }
         }
@@ -83,10 +99,6 @@ namespace Memory
             }
         }
 
-        private readonly DispatcherTimer _gameTimer = new DispatcherTimer();
-        private int _cardsGuessed;
-        private ObservableCollection<CardImage> _cardImages = new ObservableCollection<CardImage>();
-
         public int CardsGuessed
         {
             get { return _cardsGuessed; }
@@ -105,6 +117,17 @@ namespace Memory
             {
                 if (Equals(value, _cardImages)) return;
                 _cardImages = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double CardAnimationDelay
+        {
+            get { return _cardAnimationDelay; }
+            set
+            {
+                if (value.Equals(_cardAnimationDelay)) return;
+                _cardAnimationDelay = value;
                 OnPropertyChanged();
             }
         }
@@ -172,6 +195,9 @@ namespace Memory
             if (!GameStarted)
                 return;
 
+            if (FirstCard != null && SecondCard != null)
+                return;
+
             Button button = sender as Button;
             if (button == null)
                 return;
@@ -180,34 +206,41 @@ namespace Memory
             if (card == null)
                 return;
 
-            card.Selected = !card.Selected;
+            card.Selected = true;
 
-            if (card.Selected)
+            if (FirstCard == null)
             {
-                if (FirstCard == null)
-                {
-                    FirstCard = card;
-                    return;
-                }
+                FirstCard = card;
+                return;
+            }
 
-                if (FirstCard.Content == card.Content)
-                {
-                    FirstCard.Visible = false;
-                    card.Visible = false;
-                    CardsGuessed++;
+            SecondCard = card;
+            OnCardsSelected();
+        }
 
-                    if (CardsGuessed == DifferentCardsCount)
-                        Win();
-                }
-                else
-                {
-                    FirstCard.Selected = false;
-                    card.Selected = false;
-                }
-                FirstCard = null;
+        private async void OnCardsSelected()
+        {
+            await Task.Delay((int)CardAnimationDelay);
+            if (FirstCard.Content == SecondCard.Content)
+            {
+                FirstCard.Visible = false;
+                SecondCard.Visible = false;
+                CardsGuessed++;
+
+                await Task.Delay((int)CardAnimationDelay);
+
+                FirstCard = SecondCard = null;
+                if (CardsGuessed == DifferentCardsCount)
+                    Win();
             }
             else
-                FirstCard = null;
+            {
+                FirstCard.Selected = false;
+                SecondCard.Selected = false;
+
+                await Task.Delay((int)CardAnimationDelay);
+                FirstCard = SecondCard = null;
+            }
         }
 
         private void Win()
