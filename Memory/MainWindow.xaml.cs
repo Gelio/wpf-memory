@@ -114,8 +114,8 @@ namespace Memory
             DifferentCardsCount = BoardSize * BoardSize / 2;
             TimeLeft = DefaultGameTime;
             InitializeComponent();
-            GenerateCards();
             PopulateCardImages();
+            GenerateCards();
 
             _gameTimer.Interval = TimeSpan.FromSeconds(1);
             _gameTimer.Tick += (sender, args) =>
@@ -149,8 +149,9 @@ namespace Memory
             List<MemoryCard> memoryCards = new List<MemoryCard>(16);
             for (int i = 1; i <= 8; i++)
             {
-                memoryCards.Add(new MemoryCard(i));
-                memoryCards.Add(new MemoryCard(i));
+                CardImage cardImage = CardImages[i - 1];
+                memoryCards.Add(new MemoryCard(i, cardImage));
+                memoryCards.Add(new MemoryCard(i, cardImage));
             }
 
             memoryCards.Shuffle();

@@ -13,6 +13,7 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:PathToImageConverter x:Key="PathToImageConverter" />
+        <converters:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -154,29 +155,47 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button Content="{Binding Content}" Click="CardOnClick" DataContext="{Binding}">
-                            <Button.Resources>
-                                <Style TargetType="Button">
+                        <Border BorderThickness="2" BorderBrush="Black" Margin="5" DataContext="{Binding}">
+                            <Border.Style>
+                                <Style TargetType="Border">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Selected}" Value="True">
-                                            <Setter Property="Button.Background" Value="DarkRed" />
-                                        </DataTrigger>
-                                        <Trigger Property="Button.IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="DarkBlue" />
-                                            <Setter Property="Cursor" Value="Hand" />
-                                        </Trigger>
                                         <DataTrigger Binding="{Binding Visible}" Value="False">
-                                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                                            <Setter Property="Visibility" Value="Hidden" />
                                         </DataTrigger>
                                     </Style.Triggers>
-                                    <Setter Property="Margin" Value="5" />
-                                    <Setter Property="BorderBrush" Value="Black" />
-                                    <Setter Property="BorderThickness" Value="2" />
-                                    <Setter Property="Background" Value="AliceBlue" />
-                                    <Setter Property="FontSize" Value="15" />
                                 </Style>
-                            </Button.Resources>
-                        </Button>
+                            </Border.Style>
+
+                            <Grid>
+                                <Button Click="CardOnClick" Content="{Binding Content}" BorderThickness="0" 
+                                        FontSize="15" Visibility="{Binding Selected, Converter={StaticResource InvertedBooleanToVisibilityConverter}}">
+                                    <Button.Resources>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Grid Background="{TemplateBinding Background}">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter Property="Background" Value="AliceBlue" />
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="DarkBlue" />
+                                                    <Setter Property="Cursor" Value="Hand" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+
+                                <Grid Background="AliceBlue" Visibility="{Binding Selected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Image Source="{Binding CardImage.FilePath}" Stretch="Fill" Margin="2" />
+                                </Grid>
+                            </Grid>
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Memory.Annotations;
+using Memory.Converters;
 
 namespace Memory
 {
@@ -14,6 +15,7 @@ namespace Memory
         private int _content;
         private bool _selected;
         private bool _visible = true;
+        private CardImage _cardImage;
 
         public int Content
         {
@@ -48,6 +50,17 @@ namespace Memory
             }
         }
 
+        public CardImage CardImage
+        {
+            get { return _cardImage; }
+            set
+            {
+                if (Equals(value, _cardImage)) return;
+                _cardImage = value;
+                OnPropertyChanged();
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
@@ -56,9 +69,10 @@ namespace Memory
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public MemoryCard(int content)
+        public MemoryCard(int content, CardImage cardImage)
         {
             Content = content;
+            CardImage = cardImage;
         }
     }
 }
