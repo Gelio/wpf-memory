@@ -31,10 +31,12 @@ namespace Memory
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public int DefaultGameTime = 60;
+        public int DefaultGameTime = 5;
         public int BoardSize = 4;
         public int DifferentCardsCount;
         public int CardFlipDelay = 500;
+        public int EndGameFirstCardDuration = 1500;
+        public double EndGameAnimationReductionRatio = 0.9;
 
         private ObservableCollection<MemoryCard> _memoryCards = new ObservableCollection<MemoryCard>();
         private MemoryCard _firstCard;
@@ -44,6 +46,8 @@ namespace Memory
         private int _cardsGuessed;
         private ObservableCollection<CardImage> _cardImages = new ObservableCollection<CardImage>();
         private MemoryCard _secondCard;
+        private bool _endGameAnimation;
+        private bool _resetEnabled = true;
 
         public ObservableCollection<MemoryCard> MemoryCards
         {
@@ -122,6 +126,28 @@ namespace Memory
             }
         }
 
+        public bool EndGameAnimation
+        {
+            get { return _endGameAnimation; }
+            set
+            {
+                if (value == _endGameAnimation) return;
+                _endGameAnimation = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ResetEnabled
+        {
+            get { return _resetEnabled; }
+            set
+            {
+                if (value == _resetEnabled) return;
+                _resetEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainWindow()
         {
             DifferentCardsCount = BoardSize * BoardSize / 2;
@@ -141,18 +167,17 @@ namespace Memory
 
         private void TimeUp()
         {
+            _gameTimer.Stop();
+            GameStarted = false;
+
             MessageBoxResult result = MessageBox.Show(this, "You lost! Would you like to start again?", "Lost", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
-                GameStarted = false;
                 GenerateCards();
                 TimeLeft = DefaultGameTime;
-                _gameTimer.Stop();
             }
             else if (result == MessageBoxResult.No)
-            {
-                Close();
-            }
+                RunEndGameAnimation();
         }
 
         private void GenerateCards()
@@ -246,9 +271,32 @@ namespace Memory
                 TimeLeft = DefaultGameTime;
             }
             else if (result == MessageBoxResult.No)
+                RunEndGameAnimation();
+        }
+
+        private async void RunEndGameAnimation()
+        {
+            EndGameAnimation = true;
+            ResetEnabled = false;
+            foreach (MemoryCard card in MemoryCards)
+                card.Visible = false;
+            double cardDuration = EndGameFirstCardDuration;
+
+            MemoryCards[0].Visible = true;
+            MemoryCards[0].Selected = true;
+            MemoryCards[0].EndGameAnimation = true;
+            await Task.Delay((int) cardDuration);
+
+            for (int i = 1; i < DifferentCardsCount * 2; i++)
             {
-                Close();
+                cardDuration *= EndGameAnimationReductionRatio;
+                MemoryCards[i].Visible = true;
+                MemoryCards[i].Selected = true;
+                MemoryCards[i].EndGameAnimation = true;
+                await Task.Delay((int) cardDuration);
             }
+
+            ResetEnabled = true;
         }
 
         private void OnStartClick(object sender, RoutedEventArgs e)
@@ -268,6 +316,7 @@ namespace Memory
             _gameTimer.Stop();
             TimeLeft = DefaultGameTime;
             FirstCard = null;
+            EndGameAnimation = false;
         }
 
         private void OnCollapseChecked(object sender, RoutedEventArgs e)

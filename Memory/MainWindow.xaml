@@ -14,6 +14,7 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:PathToImageConverter x:Key="PathToImageConverter" />
         <converters:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" />
+        <converters:BooleanInverseConverter x:Key="BooleanInverseConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -212,6 +213,15 @@
                                                         </BeginStoryboard>
                                                     </DataTrigger.ExitActions>
                                                 </DataTrigger>
+                                                <DataTrigger Binding="{Binding EndGameAnimation}" Value="True">
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard TargetProperty="Opacity">
+                                                                <DoubleAnimation Duration="0:0:0.5" To="0.5" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Grid.Style>
@@ -239,10 +249,10 @@
                         <Setter Property="Margin" Value="10" />
                     </Style>
                 </StackPanel.Resources>
-                <Button Click="OnResetClick" Style="{StaticResource BaseButtonStyle}">
+                <Button Click="OnResetClick" Style="{StaticResource BaseButtonStyle}" IsEnabled="{Binding ResetEnabled}">
                     Reset
                 </Button>
-                <Button Click="OnStartClick">
+                <Button Click="OnStartClick" IsEnabled="{Binding EndGameAnimation, Converter={StaticResource BooleanInverseConverter}}">
                     <Button.Resources>
                         <Style TargetType="Button" BasedOn="{StaticResource BaseButtonStyle}">
                             <Style.Triggers>

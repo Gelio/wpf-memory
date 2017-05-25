@@ -19,6 +19,7 @@ namespace Memory
         private CardImage _cardImage;
         private bool _animationVisible = false;
         private Duration _animationDuration = new Duration(TimeSpan.FromMilliseconds(1000));
+        private bool _endGameAnimation;
 
         public int Content
         {
@@ -71,6 +72,17 @@ namespace Memory
             {
                 if (value == _animationVisible) return;
                 _animationVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool EndGameAnimation
+        {
+            get { return _endGameAnimation; }
+            set
+            {
+                if (value == _endGameAnimation) return;
+                _endGameAnimation = value;
                 OnPropertyChanged();
             }
         }
