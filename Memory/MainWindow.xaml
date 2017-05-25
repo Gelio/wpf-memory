@@ -196,24 +196,6 @@
                                     <Grid.Style>
                                         <Style TargetType="Grid">
                                             <Setter Property="Opacity" Value="0" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding AnimationVisible}" Value="True">
-                                                    <DataTrigger.EnterActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard TargetProperty="Opacity">
-                                                                <DoubleAnimation Duration="0:0:0.5" To="1" />
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.EnterActions>
-                                                    <DataTrigger.ExitActions>
-                                                        <BeginStoryboard>
-                                                            <Storyboard TargetProperty="Opacity">
-                                                                <DoubleAnimation Duration="0:0:0.5" To="0" />
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </DataTrigger.ExitActions>
-                                                </DataTrigger>
-                                            </Style.Triggers>
                                         </Style>
                                     </Grid.Style>
                                     <Image Source="{Binding CardImage.FilePath}" Stretch="Fill" Margin="2" />

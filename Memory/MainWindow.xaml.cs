@@ -222,7 +222,9 @@ namespace Memory
                 return;
 
             card.Selected = true;
-            card.AnimationVisible = true;
+
+            Grid cardGrid = GetGridFromControlByItem(card);
+            PrepareOpacityStoryboard(1, TimeOfFlipBackSlider.Value, cardGrid).Begin();
 
             if (FirstCard == null)
             {
@@ -241,8 +243,13 @@ namespace Memory
             // Wait for both cards to stay up (slider can be changed in the meantime, therefore I need to read it again)
             await Task.Delay((int)TimeOfFlipBackSlider.Value);
 
-            FirstCard.AnimationVisible = SecondCard.AnimationVisible = false;
-            await Task.Delay(CardFlipDelay);
+            Grid firstCardGrid = GetGridFromControlByItem(FirstCard);
+            Grid secondCardGrid = GetGridFromControlByItem(SecondCard);
+
+            PrepareOpacityStoryboard(0, TimeOfFlipBackSlider.Value, firstCardGrid).Begin();
+            PrepareOpacityStoryboard(0, TimeOfFlipBackSlider.Value, secondCardGrid).Begin();
+
+            await Task.Delay((int) TimeOfFlipBackSlider.Value);
             FirstCard.Selected = SecondCard.Selected = false;
 
             if (FirstCard.Content == SecondCard.Content)
@@ -284,16 +291,8 @@ namespace Memory
 
             for (int i = 0; i < DifferentCardsCount * 2; i++)
             {
-                Grid innerGrid = GetGridFromControl(i);
-                
-                Storyboard sb = new Storyboard();
-
-                DoubleAnimation endAnimation = new DoubleAnimation(0.5, new Duration(TimeSpan.FromMilliseconds(cardDuration)));
-                Storyboard.SetTarget(endAnimation, innerGrid);
-                Storyboard.SetTargetProperty(endAnimation, new PropertyPath(Grid.OpacityProperty));
-
-                sb.Children.Add(endAnimation);
-                sb.Begin();
+                Grid innerGrid = GetGridFromControlByIndex(i);
+                PrepareOpacityStoryboard(0.5, cardDuration, innerGrid).Begin();
 
                 MemoryCards[i].Visible = true;
                 MemoryCards[i].Selected = true;
@@ -304,9 +303,31 @@ namespace Memory
             ResetEnabled = true;
         }
 
-        private Grid GetGridFromControl(int index)
+        private Storyboard PrepareOpacityStoryboard(double to, double miliseconds, Grid grid)
+        {
+            Storyboard sb = new Storyboard();
+
+            DoubleAnimation animation = new DoubleAnimation(to, new Duration(TimeSpan.FromMilliseconds(miliseconds)));
+            Storyboard.SetTargetProperty(animation, new PropertyPath(Grid.OpacityProperty));
+            Storyboard.SetTarget(animation, grid);
+
+            sb.Children.Add(animation);
+
+            return sb;
+        }
+
+        private Grid GetGridFromControlByIndex(int index)
         {
             var border = VisualTreeHelper.GetChild(CardsItemControl.ItemContainerGenerator.ContainerFromIndex(index), 0);
+            var outerGrid = VisualTreeHelper.GetChild(border, 0);
+            Grid innerGrid = VisualTreeHelper.GetChild(outerGrid, 1) as Grid;
+
+            return innerGrid;
+        }
+
+        private Grid GetGridFromControlByItem(MemoryCard card)
+        {
+            var border = VisualTreeHelper.GetChild(CardsItemControl.ItemContainerGenerator.ContainerFromItem(card), 0);
             var outerGrid = VisualTreeHelper.GetChild(border, 0);
             Grid innerGrid = VisualTreeHelper.GetChild(outerGrid, 1) as Grid;
 
